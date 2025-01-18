@@ -1231,7 +1231,7 @@ class FunkinLua {
 			#if TRANSLATIONS_ALLOWED
 			path = Paths.getPath('data/$songPath/${dialogueFile}_${ClientPrefs.data.language}.json', TEXT);
 			#if MODS_ALLOWED
-			if(!FileSystem.exists(path))
+			if(!FileSystem.exists(path) #if android || Paths.filesystem.exists(path) #end)
 			#else
 			if(!Assets.exists(path, TEXT))
 			#end
@@ -1241,7 +1241,7 @@ class FunkinLua {
 			luaTrace('startDialogue: Trying to load dialogue: ' + path);
 
 			#if MODS_ALLOWED
-			if(FileSystem.exists(path))
+			if(FileSystem.exists(path) #if android || Paths.filesystem.exists(path) #end)
 			#else
 			if(Assets.exists(path, TEXT))
 			#end
@@ -1562,12 +1562,12 @@ class FunkinLua {
 		}
 
 		try{
-			var isString:Bool = !FileSystem.exists(scriptName);
+			var isString:Bool = !FileSystem.exists(scriptName) #if android && !Paths.filesystem.exists(scriptName) #end;
 			var result:Dynamic = null;
-			if(!isString)
+			if(!isString && FileSystem.exists(scriptName))
 				result = LuaL.dofile(lua, scriptName);
 			else
-				result = LuaL.dostring(lua, scriptName);
+				result = LuaL.dostring(lua, #if android Paths.filesystem.exists(scriptName) ? Paths.filesystem.getContent(scriptName) : #end scriptName);
 
 			var resultStr:String = Lua.tostring(lua, result);
 			if(resultStr != null && result != 0) {
@@ -1745,7 +1745,7 @@ class FunkinLua {
 		if(!scriptFile.endsWith(ext)) scriptFile += ext;
 		var path:String = Paths.getPath(scriptFile, TEXT);
 		#if MODS_ALLOWED
-		if(FileSystem.exists(path))
+		if(FileSystem.exists(path) #if android || Paths.filesystem.exists(path) #end)
 		#else
 		if(Assets.exists(path, TEXT))
 		#end
@@ -1753,7 +1753,7 @@ class FunkinLua {
 			return path;
 		}
 		#if MODS_ALLOWED
-		else if(FileSystem.exists(scriptFile))
+		else if(FileSystem.exists(scriptFile) #if android || Paths.filesystem.exists(scriptFile) #end)
 		#else
 		else if(Assets.exists(scriptFile, TEXT))
 		#end
@@ -1815,21 +1815,21 @@ class FunkinLua {
 
 		for (folder in foldersToCheck)
 		{
-			if(FileSystem.exists(folder))
+			if(FileSystem.exists(folder) #if android || Paths.filesystem.exists(folder) #end)
 			{
 				var frag:String = folder + name + '.frag';
 				var vert:String = folder + name + '.vert';
 				var found:Bool = false;
-				if(FileSystem.exists(frag))
+				if(FileSystem.exists(frag) #if android || Paths.filesystem.exists(frag) #end)
 				{
-					frag = File.getContent(frag);
+					frag = #if android Paths.filesystem.exists(frag) ? Paths.filesystem.getContent(frag) : #end File.getContent(frag);
 					found = true;
 				}
 				else frag = null;
 
-				if(FileSystem.exists(vert))
+				if(FileSystem.exists(vert) #if android || Paths.filesystem.exists(vert) #end)
 				{
-					vert = File.getContent(vert);
+					vert = #if android Paths.filesystem.exists(vert) ? Paths.filesystem.getContent(vert) : #end File.getContent(vert);
 					found = true;
 				}
 				else vert = null;

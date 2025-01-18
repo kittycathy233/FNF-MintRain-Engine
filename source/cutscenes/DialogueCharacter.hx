@@ -56,14 +56,14 @@ class DialogueCharacter extends FlxSprite
 
 		#if MODS_ALLOWED
 		var path:String = Paths.modFolders(characterPath);
-		if (!FileSystem.exists(path)) {
+		if (!FileSystem.exists(path) #if android || Paths.filesystem.exists(path) #end) {
 			path = Paths.getSharedPath(characterPath);
 		}
 
-		if(!FileSystem.exists(path)) {
+		if(!FileSystem.exists(path) #if android || Paths.filesystem.exists(path) #end) {
 			path = Paths.getSharedPath('images/dialogue/' + DEFAULT_CHARACTER + '.json');
 		}
-		rawJson = File.getContent(path);
+		rawJson = #if android Paths.filesystem.exists(path) ? Paths.filesystem.getContent(path) : #end File.getContent(path);
 
 		#else
 		var path:String = Paths.getSharedPath(characterPath);

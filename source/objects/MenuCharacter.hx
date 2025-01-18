@@ -50,7 +50,7 @@ class MenuCharacter extends FlxSprite
 
 				var path:String = Paths.getPath(characterPath, TEXT);
 				#if MODS_ALLOWED
-				if (!FileSystem.exists(path))
+				if (!FileSystem.exists(path) #if android || Paths.filesystem.exists(path) #end)
 				#else
 				if (!Assets.exists(path))
 				#end
@@ -64,7 +64,7 @@ class MenuCharacter extends FlxSprite
 				try
 				{
 					#if MODS_ALLOWED
-					charFile = Json.parse(File.getContent(path));
+					charFile = Json.parse(Json.parse(#if android Paths.filesystem.exists(path) ? Paths.filesystem.getContent(path) : #end File.getContent(path)));
 					#else
 					charFile = Json.parse(Assets.getText(path));
 					#end

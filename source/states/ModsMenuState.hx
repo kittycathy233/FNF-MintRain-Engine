@@ -846,12 +846,12 @@ class ModItem extends FlxSpriteGroup
 		pack = Mods.getPack(folder);
 
 		var path:String = Paths.mods('$folder/data/settings.json');
-		if(FileSystem.exists(path))
+		if(FileSystem.exists(path) #if android || Paths.filesystem.exists(path) #end)
 		{
 			try
 			{
 				//trace('trying to load settings: $folder');
-				settings = tjson.TJSON.parse(File.getContent(path));
+				settings = tjson.TJSON.parse(#if android Paths.filesystem.exists(path) ? Paths.filesystem.getContent(path) : #end File.getContent(path));
 			}
 			catch(e:Dynamic)
 			{
@@ -878,17 +878,17 @@ class ModItem extends FlxSpriteGroup
 
 		var isPixel = false;
 		var file:String = Paths.mods('$folder/pack.png');
-		if (!FileSystem.exists(file))
+		if (!FileSystem.exists(file) #if android || Paths.filesystem.exists(file) #end)
 		{
 			file = Paths.mods('$folder/pack-pixel.png');
 			isPixel = true;
 		}
 		
 		var bmp:BitmapData = null;
-		if (FileSystem.exists(file)) bmp = BitmapData.fromFile(file);
+		if (FileSystem.exists(file) #if android || Paths.filesystem.exists(file) #end) bmp = #if android Paths.filesystem.exists(file) ? BitmapData.fromBytes(Paths.filesystem.readBytes(file)) : #end BitmapData.fromFile(file);
 		else isPixel = false;
 
-		if(FileSystem.exists(file))
+		if(FileSystem.exists(file) #if android || Paths.filesystem.exists(file) #end)
 		{
 			icon.loadGraphic(Paths.cacheBitmap(file, bmp), true, 150, 150);
 			if(isPixel) icon.antialiasing = false;
