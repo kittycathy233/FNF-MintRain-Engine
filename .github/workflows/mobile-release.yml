@@ -7,7 +7,7 @@ permissions:
 
 env:
   PROJECT_NAME: PsychEngine
-  REPO_PATH: MobilePorting/FNF-PsychEngine-Mobile
+  REPO_PATH: MZDM-B/FNF-OSA-Rebase
 
 jobs:
   get-commit-hash:
