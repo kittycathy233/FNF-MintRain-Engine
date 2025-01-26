@@ -1,7 +1,5 @@
 package backend;
 
-import backend.ClientPrefs;
-
 class Rating
 {
 	public var name:String = '';
@@ -28,7 +26,7 @@ class Rating
 
 	public static function loadDefault():Array<Rating>
 	{
-		var ratingsData:Array<Rating> = [new Rating('sick')]; //highest rating goes first
+		var ratingsData:Array<Rating> = [new Rating('sick')]; //最高判定
 
 		var rating:Rating = new Rating('good');
 		rating.ratingMod = 0.67;
