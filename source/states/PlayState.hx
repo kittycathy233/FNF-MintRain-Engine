@@ -578,6 +578,18 @@ class PlayState extends MusicBeatState
 		reloadHealthBarColors();
 		uiGroup.add(healthBar);
 
+		msTimeTxt = new FlxText(0, 0, 400, "", 32);
+		msTimeTxt.setFormat(Paths.font('vcr.ttf'), 23, 0xFF87CEEB, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		msTimeTxt.scrollFactor.set();
+		msTimeTxt.alpha = 0;
+		msTimeTxt.visible = true;
+		msTimeTxt.borderSize = 1.3;
+		/*mstimeTxt.y = comboSpr.y + 20;
+		mstimeTxt.x += comboSpr.x + 100;*/
+		msTimeTxt.x = ClientPrefs.data.comboOffset[2] + 345;
+		msTimeTxt.y = ClientPrefs.data.comboOffset[3] + 480 ;
+		uiGroup.add(msTimeTxt);
+
 		iconP1 = new HealthIcon(boyfriend.healthIcon, true);
 		iconP1.y = healthBar.y - 75;
 		iconP1.visible = !ClientPrefs.data.hideHud;
@@ -2664,6 +2676,26 @@ class PlayState extends MusicBeatState
 			uiFolder = uiPrefix + "UI/";
 			antialias = !isPixelStage;
 		}
+		
+		if (!ClientPrefs.data.rmmsTimeTxt) {
+			msTimeTxt.alpha = ClientPrefs.data.ratingsAlpha;
+			msTimeTxt.scale.set(1.35, 1.2);
+			msTimeTxt.text = Std.string(Math.round(noteDiff)) + "ms";
+
+			if (msTimeTxtTween1 != null){
+				msTimeTxtTween1.cancel(); msTimeTxtTween1.destroy(); // top 10 awesome code
+			}
+			msTimeTxtTween1 = FlxTween.tween(msTimeTxt, {alpha: 0}, 0.2, {
+				onComplete: function(tw:FlxTween) {msTimeTxtTween1 = null;}, startDelay: 0.3
+			});
+
+			if (msTimeTxtTween2 != null){
+				msTimeTxtTween2.cancel(); msTimeTxtTween2.destroy(); // top 10 awesome code
+			}
+			msTimeTxtTween2 = FlxTween.tween(msTimeTxt.scale, {x: 1, y: 1}, 0.4, {
+				ease: FlxEase.circOut,
+			});
+		}
 
 		if (ClientPrefs.data.popUpRating)
 		{
@@ -2741,7 +2773,7 @@ class PlayState extends MusicBeatState
 				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(uiFolder + 'num' + Std.parseInt(separatedScore.charAt(i)) + uiPostfix));
 				numScore.screenCenter();
 				numScore.x = placement + (43 * daLoop) - 90 + ClientPrefs.data.comboOffset[2];
-				numScore.y += 80 - ClientPrefs.data.comboOffset[3];
+				numScore.y += 80 - ClientPrefs.data.comboOffset[3] + 120;
 
 				if (!PlayState.isPixelStage)
 					numScore.setGraphicSize(Std.int(numScore.width * 0.5));
