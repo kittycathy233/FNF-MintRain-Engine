@@ -580,22 +580,18 @@ var songPercent:Float = 0;
 					beatTween = null;
 				}
 			});
-//更多的东西
+		//更多的东西
 			if(ClientPrefs.data.ratbounce == true) {
 			rating.angle = (Math.random() * 10 + 7) * (Math.random() > .5 ? 1 : -1);
 			FlxTween.tween(rating, {angle: 0}, .8, {ease: FlxEase.backOut});
 			}
 
 			if(ClientPrefs.data.exratbounce == true) {
+				theEXrating.scale.set(0.85, 0.85);
 				theEXrating.angle = (Math.random() * 10 + 7) * (Math.random() > .5 ? 1 : -1);
 				FlxTween.tween(theEXrating, {angle: 0}, .8, {ease: FlxEase.backOut});
-				}
-	
-
-			theEXrating.scale.set(0.85, 0.85);
-			FlxTween.tween(theEXrating.scale, {x: 0.7, y: 0.7}, 0.5, {
-				ease: FlxEase.circOut,
-			});
+				FlxTween.tween(theEXrating.scale, {x: 0.7, y: 0.7}, 0.5, {ease: FlxEase.circOut,});
+			}
 
 			iconP1.scale.set(1.2, 1.2);
 			iconP2.scale.set(1.2, 1.2);

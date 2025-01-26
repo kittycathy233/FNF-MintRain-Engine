@@ -2766,9 +2766,9 @@ class PlayState extends MusicBeatState
 				comboSpr.alpha = ratingAlpha;
 				}
 
-			comboGroup.add(rating);
-			comboGroup.add(theEXrating);
-	
+				comboGroup.add(rating);
+				comboGroup.add(theEXrating);
+		
 			if (!PlayState.isPixelStage)
 			{
 				rating.setGraphicSize(Std.int(rating.width * 0.7));
@@ -2780,6 +2780,19 @@ class PlayState extends MusicBeatState
 				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.85));
 				theEXrating.setGraphicSize(Std.int(theEXrating.width * daPixelZoom * 0.85));
 				comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.85));
+			}
+
+			if(ClientPrefs.data.ratbounce == true) 
+			{
+				rating.scale.set(0.9, 0.8);
+				FlxTween.tween(rating.scale, {x: 0.7, y: 0.7}, 0.4, {ease: FlxEase.circOut,});
+			}		
+			if(ClientPrefs.data.exratbounce == true) 
+			{
+				theEXrating.scale.set(0.85, 0.85);
+				theEXrating.angle = (Math.random() * 10 + 4) * (Math.random() > .5 ? 1 : -1);
+				FlxTween.tween(theEXrating, {angle: 0}, .6, {ease: FlxEase.quartOut});
+				FlxTween.tween(theEXrating.scale, {x: 0.7, y: 0.7}, 0.5, {ease: FlxEase.circOut});
 			}
 
 			comboSpr.updateHitbox();
@@ -2828,13 +2841,13 @@ class PlayState extends MusicBeatState
 					xThing = numScore.x;
 			}
 			comboSpr.x = xThing + 50;
+
 			FlxTween.tween(rating, {alpha: 0}, 0.2 / playbackRate, {
 				startDelay: Conductor.crochet * 0.001 / playbackRate
 			});
 			FlxTween.tween(theEXrating, {alpha: 0}, 0.2 / playbackRate, {
 				startDelay: Conductor.crochet * 0.00075 / playbackRate
 			});
-
 			FlxTween.tween(comboSpr, {alpha: 0}, 0.2 / playbackRate, {
 				onComplete: function(tween:FlxTween)
 				{
@@ -3271,14 +3284,7 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote)
 			{
 				combo++;
-				if(combo > 9999) combo = 9999;
-				popUpScore(note);
-			}
-			
-			if (!note.isSustainNote)
-			{
-				combo++;
-				if(combo > 9999) combo = 9999;
+				//if(combo > 9999) combo = 9999;
 				popUpScore(note);
 				notesHitArray.unshift(Date.now());
 			}
