@@ -3,7 +3,6 @@ package;
 import debug.FPSCounter;
 import backend.Highscore;
 import flixel.FlxGame;
-import haxe.io.Path;
 import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -160,7 +159,7 @@ class Main extends Sprite
 		DiscordClient.prepare();
 		#end
 		
-		//#if desktop FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, toggleFullScreen); #end
+		#if desktop FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, toggleFullScreen); #end
 
 		#if android FlxG.android.preventDefaultKeys = [BACK]; #end
 
@@ -193,7 +192,7 @@ class Main extends Sprite
 	}
 
 	function toggleFullScreen(event:KeyboardEvent) {
-		if(Controls.instance.justReleased('fullscreen'))
+		if (Controls.instance.justReleased('fullscreen'))
 			FlxG.fullscreen = !FlxG.fullscreen;
 	}
 }

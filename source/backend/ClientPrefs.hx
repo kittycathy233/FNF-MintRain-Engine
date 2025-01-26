@@ -82,7 +82,7 @@ import states.TitleState;
 		'opponentplay' => false
 	];
 
-	public var comboOffset:Array<Int> = [0, 0, 0, 0];
+	public var comboOffset:Array<Int> = [0, 0, 0, 0, 0, 0];
 	public var ratingOffset:Int = 0;
 	public var sickWindow:Int = 45;
 	public var goodWindow:Int = 90;
@@ -94,8 +94,21 @@ import states.TitleState;
 	public var language:String = 'en-US';
 
 	//额外的特性
-	public var rmperfect:Bool = false;
-	public var fpsCounterSize:Int = 16;
+	public var fpsCounterSize:Int = 14;
+	public var perfectWindow:Int = 25;
+	public var coloredfpscounter:Bool = false;
+	public var exgameversion:Bool = true;
+	public var exratingDisplay:Bool = true;
+	public var rmperfect:Bool = false;	
+	public var ratbounce:Bool = true;
+	//public var osIconBop:Bool = false;
+	public var scoretxtstyle:String = 'MintRain';
+	public var rmmsTimeTxt:Bool = false;
+	public var scoretxtbounce:Bool = false;
+	public var exratbounce:Bool = false;
+	public var iconbopstyle:String = 'MintRain';
+	public var healthbarstyle:String = 'Psych';
+	public var ratingsAlpha:Float = 1;
 
 }
 

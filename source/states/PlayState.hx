@@ -70,21 +70,57 @@ import crowplexus.iris.Iris;
 **/
 class PlayState extends MusicBeatState
 {
+	//杂七杂八的新特性
+	var notesHitArray:Array<Date> = [];
+	var nps:Int = 0;
+	var maxNPS:Int = 0;
+	var npsCheck:Int = 0;
+	var allNotesMs:Float = 0;
+	var averageMs:Float = 0;
+	var msTimeTxt:FlxText;
+	var msTimeTxtTween1:FlxTween;
+	var msTimeTxtTween2:FlxTween;
+	var scoreTxtTweenAngle:FlxTween;
+	var dancingLeft:Bool = false;
+	var ratingexspr:String = '';
+	var exratingexspr:String = '-extra';
+	var ratingAlpha:Float = 1;
+	
 	public static var STRUM_X = 42;
 	public static var STRUM_X_MIDDLESCROLL = -278;
 
-	public static var ratingStuff:Array<Dynamic> = [
-		['You Suck!', 0.2], //From 0% to 19%
-		['Shit', 0.4], //From 20% to 39%
-		['Bad', 0.5], //From 40% to 49%
-		['Bruh', 0.6], //From 50% to 59%
-		['Meh', 0.69], //From 60% to 68%
-		['Nice', 0.7], //69%
-		['Good', 0.8], //From 70% to 79%
-		['Great', 0.9], //From 80% to 89%
-		['Sick!', 1], //From 90% to 99%
-		['Perfect!!', 1] //The value on this one isn't used actually, since Perfect is always "1"
-	];
+	public var ratingStuff:Array<Dynamic> = ClientPrefs.data.scoretxtstyle == "Kade" ?
+    [
+		["D", 0.6], // accuracy < 60
+		["C", 0.7], // accuracy >= 60
+		["B", 0.80], // accuracy >= 70
+		["A", 0.85], // accuracy >= 80
+		["A.", 0.9], // accuracy >= 85
+		["A:", 0.93], // accuracy >= 90
+		["AA", 0.965], // accuracy >= 93
+		["AA.", 0.99], // accuracy >= 96.50
+		["AA:", 0.997], // accuracy >= 99
+		["AAA", 0.998], // accuracy >= 99.70
+		["AAA.", 0.999], // accuracy >= 99.80
+		["AAA:", 0.99955], // accuracy >= 99.90
+		["AAAA", 0.99970], // accuracy >= 99.955
+		["AAAA.", 0.99980], // accuracy >= 99.970
+		["AAAA:", 0.999935], // accuracy >= 99.980
+		["AAAAA", 1], // accuracy >= 99.9935
+		["AAAAA", 1], // accuracy >= 99.9935    
+		] :
+    [
+        ['You Suck!', 0.2], //From 0% to 19%
+        ['Shit', 0.4], //From 20% to 39%
+        ['Bad', 0.5], //From 40% to 49%
+        ['Bruh', 0.6], //From 50% to 59%
+        ['Meh', 0.69], //From 60% to 68%
+        ['Nice', 0.7], //69%
+        ['Good', 0.8], //From 70% to 79%
+        ['Great', 0.9], //From 80% to 89%
+        ['Sick!', 1], //From 90% to 99%
+        ['Perfect!!', 1] //The value on this one isn't used actually, since Perfect is always "1"
+    ];	
 
 	//event variables
 	private var isCameraOnForcedPos:Bool = false;
@@ -267,6 +303,8 @@ class PlayState extends MusicBeatState
 	public static var nextReloadAll:Bool = false;
 	override public function create()
 	{
+		ratingAlpha = ClientPrefs.data.ratingsAlpha;
+		
 		//trace('Playback Rate: ' + playbackRate);
 		Paths.clearStoredMemory();
 		if(nextReloadAll)
@@ -1160,14 +1198,34 @@ class PlayState extends MusicBeatState
 	public dynamic function updateScoreText()
 	{
 		var str:String = Language.getPhrase('rating_$ratingName', ratingName);
+		var osstr:String = '';
+		var kadestr:String = '';
+		var mintrainstr:String = '';
+		
 		if(totalPlayed != 0)
 		{
 			var percent:Float = CoolUtil.floorDecimal(ratingPercent * 100, 2);
 			str += ' (${percent}%) - ' + Language.getPhrase(ratingFC);
+			osstr += '${percent}%';
+			kadestr += percent + '% | (' + ratingFC + ') ${ratingName}';
+			mintrainstr += '${percent}% - ' + ratingFC + ' | ' + ratingName;
 		}
 
 		var tempScore:String;
-		if(!instakillOnMiss) tempScore = Language.getPhrase('score_text', 'Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+		if(!instakillOnMiss) {
+			if (ClientPrefs.data.scoretxtstyle == "Kade")
+				tempScore = Language.getPhrase('score_text', 'NPS: {4} (Max {5}) | Score: {1} | Combo Breaks: {2} | Accuracy: {3}', [songScore, songMisses, kadestr, nps, maxNPS]);
+			else if (ClientPrefs.data.scoretxtstyle == "OS")
+				tempScore = Language.getPhrase('score_text', 'Score: {1} | Misses: {2} | Average: {4}ms | Accuracy: {3}', [songScore, songMisses, osstr,averageMs]);
+			else if (ClientPrefs.data.scoretxtstyle == "MintRain")
+				tempScore = Language.getPhrase('score_text', 'NPS: {4} (Max {5}) | Score: {1} | Misses: {2} | Accuracy: {3}', [songScore, songMisses, mintrainstr, nps, maxNPS]);
+
+			else tempScore = Language.getPhrase('score_text', 'Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+		
+		
+		
+		}
+		
 		else tempScore = Language.getPhrase('score_text_instakill', 'Score: {1} | Rating: {2}', [songScore, str]);
 		scoreTxt.text = tempScore;
 	}
@@ -1178,6 +1236,7 @@ class PlayState extends MusicBeatState
 		var goods:Int = ratingsData[1].hits;
 		var bads:Int = ratingsData[2].hits;
 		var shits:Int = ratingsData[3].hits;
+        var perfects:Int = !ClientPrefs.data.rmperfect ? ratingsData[4].hits : 0;    
 
 		ratingFC = "";
 		if(songMisses == 0)
@@ -1185,6 +1244,7 @@ class PlayState extends MusicBeatState
 			if (bads > 0 || shits > 0) ratingFC = 'FC';
 			else if (goods > 0) ratingFC = 'GFC';
 			else if (sicks > 0) ratingFC = 'SFC';
+			else if (perfects > 0) ratingFC = 'PFC';
 		}
 		else {
 			if (songMisses < 10) ratingFC = 'SDCB';
@@ -2547,7 +2607,9 @@ class PlayState extends MusicBeatState
 			uiFolder = uiPrefix + "UI/";
 
 		for (rating in ratingsData)
-			Paths.image(uiFolder + rating.image + uiPostfix);
+			Paths.image(uiFolder + rating.image + ratingexspr + uiPostfix);
+		for (theEXrating in ratingsData)
+			Paths.image(uiFolder + theEXrating.image + exratingexspr + uiPostfix);
 		for (i in 0...10)
 			Paths.image(uiFolder + 'num' + i + uiPostfix);
 	}
@@ -2570,6 +2632,7 @@ class PlayState extends MusicBeatState
 
 		var placement:Float = FlxG.width * 0.35;
 		var rating:FlxSprite = new FlxSprite();
+		var theEXrating:FlxSprite = new FlxSprite();
 		var score:Int = 350;
 
 		//tryna do MS based judgment due to popular demand
@@ -2604,7 +2667,7 @@ class PlayState extends MusicBeatState
 
 		if (ClientPrefs.data.popUpRating)
 		{
-			rating.loadGraphic(Paths.image(uiFolder + daRating.image + uiPostfix));
+			rating.loadGraphic(Paths.image(uiFolder + daRating.image + ratingexspr + uiPostfix));
 			rating.screenCenter();
 			rating.x = placement - 40;
 			rating.y -= 60;
@@ -2612,10 +2675,22 @@ class PlayState extends MusicBeatState
 			rating.velocity.y -= FlxG.random.int(140, 175) * playbackRate;
 			rating.velocity.x -= FlxG.random.int(0, 10) * playbackRate;
 			rating.visible = (!ClientPrefs.data.hideHud && showRating);
-			rating.x += ClientPrefs.data.comboOffset[0];
-			rating.y -= ClientPrefs.data.comboOffset[1];
+			rating.x += ClientPrefs.data.comboOffset[0] - 130;
+			rating.y -= ClientPrefs.data.comboOffset[1] - 120;
 			rating.antialiasing = antialias;
 
+			theEXrating.loadGraphic(Paths.image(uiFolder + daRating.image + exratingexspr + uiPostfix));
+			theEXrating.screenCenter();
+			theEXrating.x = placement - 40;
+			theEXrating.y -= 60;
+			theEXrating.acceleration.y = 550 * playbackRate * playbackRate;
+			theEXrating.velocity.y -= FlxG.random.int(140, 175) * playbackRate;
+			theEXrating.velocity.x -= FlxG.random.int(0, 10) * playbackRate;
+			theEXrating.visible = (!ClientPrefs.data.hideHud && showRating);
+			theEXrating.x += ClientPrefs.data.comboOffset[4] + 130;
+			theEXrating.y -= ClientPrefs.data.comboOffset[5] - 200;
+			theEXrating.antialiasing = antialias;
+			
 			var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(uiFolder + 'combo' + uiPostfix));
 			comboSpr.screenCenter();
 			comboSpr.x = placement;
@@ -2623,25 +2698,37 @@ class PlayState extends MusicBeatState
 			comboSpr.velocity.y -= FlxG.random.int(140, 160) * playbackRate;
 			comboSpr.visible = (!ClientPrefs.data.hideHud && showCombo);
 			comboSpr.x += ClientPrefs.data.comboOffset[0];
-			comboSpr.y -= ClientPrefs.data.comboOffset[1];
+			comboSpr.y -= ClientPrefs.data.comboOffset[1] + 100;
 			comboSpr.antialiasing = antialias;
-			comboSpr.y += 60;
+			comboSpr.y += 60 + 30 - 80 + 200;
 			comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
-			comboGroup.add(rating);
+			
+			if (ratingAlpha != 1)
+				{
+				rating.alpha = ratingAlpha;
+				theEXrating.alpha = ratingAlpha;
+				comboSpr.alpha = ratingAlpha;
+				}
 
+			comboGroup.add(rating);
+			comboGroup.add(theEXrating);
+	
 			if (!PlayState.isPixelStage)
 			{
 				rating.setGraphicSize(Std.int(rating.width * 0.7));
+				theEXrating.setGraphicSize(Std.int(theEXrating.width * 0.7));
 				comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
 			}
 			else
 			{
 				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.85));
+				theEXrating.setGraphicSize(Std.int(theEXrating.width * daPixelZoom * 0.85));
 				comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.85));
 			}
 
 			comboSpr.updateHitbox();
 			rating.updateHitbox();
+			theEXrating.updateHitbox();
 
 			var daLoop:Int = 0;
 			var xThing:Float = 0;
@@ -2688,12 +2775,16 @@ class PlayState extends MusicBeatState
 			FlxTween.tween(rating, {alpha: 0}, 0.2 / playbackRate, {
 				startDelay: Conductor.crochet * 0.001 / playbackRate
 			});
+			FlxTween.tween(theEXrating, {alpha: 0}, 0.2 / playbackRate, {
+				startDelay: Conductor.crochet * 0.00075 / playbackRate
+			});
 
 			FlxTween.tween(comboSpr, {alpha: 0}, 0.2 / playbackRate, {
 				onComplete: function(tween:FlxTween)
 				{
 					comboSpr.destroy();
 					rating.destroy();
+					theEXrating.destroy();
 				},
 				startDelay: Conductor.crochet * 0.002 / playbackRate
 			});

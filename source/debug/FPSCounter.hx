@@ -31,6 +31,9 @@ class FPSCounter extends TextField
         The current memory usage (WARNING: this is NOT your total program memory usage, rather it shows the garbage collector memory)
     **/
     public var memoryMegas(get, never):Float;
+    
+	public var memoryPeakMegas(get, never):Float;
+    private var memoryPeak:Float = 0;
 
     @:noCompletion private var times:Array<Float>;
 
@@ -60,7 +63,7 @@ class FPSCounter extends TextField
         defaultTextFormat = new TextFormat(font.fontName, (ClientPrefs.data.fpsCounterSize), color); // 使用自定义字体
         width = FlxG.width;
         multiline = true;
-        text = "FPS: ";
+        text = "Loading...";
 
         times = [];
     }
@@ -86,10 +89,15 @@ class FPSCounter extends TextField
 
     public dynamic function updateText():Void // so people can override it in hscript
     {
+		if (memoryMegas > memoryPeak) {
+            memoryPeak = memoryMegas;
+        }
+
         text = 
         'FPS: $currentFPS' + 
-        '\nMemory: ${flixel.util.FlxStringUtil.formatBytes(memoryMegas)}' +
-        os;
+        '\nMemory: ${flixel.util.FlxStringUtil.formatBytes(memoryMegas)}'+' / ${flixel.util.FlxStringUtil.formatBytes(memoryPeak)}' + 
+		os ;
+        if(ClientPrefs.data.exgameversion) text += "\nMintRain Engine 1.0.14\nPsych Engine v1.0.1";
 
         textColor = 0xFFFFFFFF;
         if (currentFPS < FlxG.drawFramerate * 0.5)
@@ -98,6 +106,9 @@ class FPSCounter extends TextField
 
     inline function get_memoryMegas():Float
     return cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE);
+
+	inline function get_memoryPeakMegas():Float
+        return memoryPeak;
 
     public inline function positionFPS(X:Float, Y:Float, ?scale:Float = 1){
         scaleX = scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
@@ -117,7 +128,7 @@ class FPSCounter extends TextField
             case 9:
                 return ::String("x86_64");
             case 5:
-                return ::String("ARM");
+                return ::String("ARMHF");
             case 12:
                 return ::String("ARM64");
             case 6:
