@@ -22,6 +22,8 @@ class NoteOffsetState extends MusicBeatState
 	var comboNums:FlxSpriteGroup;
 	var dumbTexts:FlxTypedGroup<FlxText>;
 
+	var theEXrating:FlxSprite;
+
 	var barPercent:Float = 0;
 	var delayMin:Int = -500;
 	var delayMax:Int = 500;
@@ -35,6 +37,17 @@ class NoteOffsetState extends MusicBeatState
 	var controllerPointer:FlxSprite;
 	var _lastControllerMode:Bool = false;
 
+public var iconP1:FlxSprite;
+public var iconP2:FlxSprite;
+public var songScore:Int = 0;
+public var songHits:Int = 0;
+public var songMisses:Int = 0;
+public var scoreTxt:FlxText;
+var scoreTxtTween:FlxTween;
+public var health:Float = 1;
+
+public var healthBar:Bar;
+var songPercent:Float = 0;
 	override public function create()
 	{
 		#if DISCORD_ALLOWED
@@ -77,13 +90,82 @@ class NoteOffsetState extends MusicBeatState
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.35;
 
-		rating = new FlxSprite().loadGraphic(Paths.image('sick'));
+		if(!ClientPrefs.data.rmperfect)
+			{
+				theEXrating = new FlxSprite().loadGraphic(Paths.image('perfect-extra'));
+				rating = new FlxSprite().loadGraphic(Paths.image('perfect'));
+			} else {
+				theEXrating = new FlxSprite().loadGraphic(Paths.image('sick-extra'));
+				rating = new FlxSprite().loadGraphic(Paths.image('sick'));
+			}
+
+
+		//rating = new FlxSprite().loadGraphic(Paths.image('sick'));
 		rating.cameras = [camHUD];
 		rating.antialiasing = ClientPrefs.data.antialiasing;
 		rating.setGraphicSize(Std.int(rating.width * 0.7));
 		rating.updateHitbox();
 		
+		/*msTimeTxt = new FlxText(0, 0, 400, "", 25);
+		msTimeTxt.setFormat(Paths.font('Fucked.ttf'), 25, 0xFF75c6ff, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		msTimeTxt.scrollFactor.set();
+		msTimeTxt.alpha = 0;
+		msTimeTxt.visible = true;
+		msTimeTxt.borderSize = 2;
+		add(msTimeTxt);
+*/
 		add(rating);
+
+		/*if(!ClientPrefs.data.rmperfect)
+			{
+					theEXrating = new FlxSprite().loadGraphic(Paths.image('perfect-extra'));
+			} else {
+				theEXrating = new FlxSprite().loadGraphic(Paths.image('sick-extra'));
+			}
+			*/
+		//theEXrating = new FlxSprite().loadGraphic(Paths.image('sick-extra'));
+		theEXrating.cameras = [camHUD];
+		theEXrating.setGraphicSize(Std.int(theEXrating.width * 0.65));
+		theEXrating.updateHitbox();
+		theEXrating.antialiasing = ClientPrefs.data.antialiasing;
+
+		//if(ClientPrefs.exratingDisplay){
+			add(theEXrating);
+		//}
+
+
+		healthBar = new Bar(0, FlxG.height * (!ClientPrefs.data.downScroll ? 0.89 : 0.11), 'healthBar', function() return health, 0, 2);
+		healthBar.screenCenter(X);
+		healthBar.leftToRight = false;
+		healthBar.scrollFactor.set();
+		healthBar.visible = !ClientPrefs.data.hideHud;
+		healthBar.alpha = ClientPrefs.data.healthBarAlpha;
+		add(healthBar);
+
+		iconP1 = new /*FlxSprite('bf', true);*/FlxSprite().loadGraphic(Paths.image('icons/icon-bf'));
+		iconP1.y = healthBar.y - 75;
+		iconP1.visible = !ClientPrefs.data.hideHud;
+		iconP1.alpha = ClientPrefs.data.healthBarAlpha;
+		//add(iconP1);
+
+		//iconP2 = new FlxSprite('gf', false);
+		iconP2 = new /*FlxSprite('bf', true);*/FlxSprite().loadGraphic(Paths.image('icons/icon-gf'));
+
+		iconP2.y = healthBar.y - 75;
+		iconP2.visible = !ClientPrefs.data.hideHud;
+		iconP2.alpha = ClientPrefs.data.healthBarAlpha;
+		//add(iconP2);
+
+
+		
+
+		scoreTxt = new FlxText(0, healthBar.y + 40, FlxG.width, "Score: 40000 | Misses: 0 | Rating: Perfect!!!(100%)", 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreTxt.scrollFactor.set();
+		scoreTxt.borderSize = 1.25;
+		scoreTxt.visible = !ClientPrefs.data.hideHud;
+		add(scoreTxt);
+
 
 		comboNums = new FlxSpriteGroup();
 		comboNums.cameras = [camHUD];
@@ -176,9 +258,11 @@ class NoteOffsetState extends MusicBeatState
 	var holdTime:Float = 0;
 	var onComboMenu:Bool = true;
 	var holdingObjectType:Null<Bool> = null;
+	
+	var theEXratingDrag:Null<Bool> = null;
 
-	var startMousePos:FlxPoint = new FlxPoint();
-	var startComboOffset:FlxPoint = new FlxPoint();
+	var startMousePos:FlxPoint = FlxPoint.get();
+	var startComboOffset:FlxPoint = FlxPoint.get();
 
 	override public function update(elapsed:Float)
 	{
@@ -227,7 +311,12 @@ class NoteOffsetState extends MusicBeatState
 						FlxG.keys.justPressed.A,
 						FlxG.keys.justPressed.D,
 						FlxG.keys.justPressed.W,
-						FlxG.keys.justPressed.S
+						FlxG.keys.justPressed.S,
+
+						FlxG.keys.justPressed.J,
+						FlxG.keys.justPressed.L,
+						FlxG.keys.justPressed.I,
+						FlxG.keys.justPressed.K
 					];
 				}
 				else
@@ -269,6 +358,14 @@ class NoteOffsetState extends MusicBeatState
 									ClientPrefs.data.comboOffset[3] += addNum;
 								case 7:
 									ClientPrefs.data.comboOffset[3] -= addNum;
+								case 8:
+									ClientPrefs.data.comboOffset[4] -= addNum;
+								case 9:
+									ClientPrefs.data.comboOffset[4] += addNum;
+								case 10:
+									ClientPrefs.data.comboOffset[5] += addNum;
+								case 11:
+									ClientPrefs.data.comboOffset[5] -= addNum;
 							}
 						}
 					}
@@ -302,6 +399,8 @@ class NoteOffsetState extends MusicBeatState
 			if (FlxG.mouse.justPressed || gamepadPressed)
 			{
 				holdingObjectType = null;
+				theEXratingDrag = null;
+
 				if(!controls.controllerMode)
 					FlxG.mouse.getScreenPosition(camHUD, startMousePos);
 				else
@@ -323,9 +422,19 @@ class NoteOffsetState extends MusicBeatState
 					startComboOffset.y = ClientPrefs.data.comboOffset[1];
 					//trace('heya');
 				}
+								//if (FlxG.mouse.justPressed && theEXrating.overlapsPoint(FlxG.mouse.getWorldPosition(camHUD), true))
+				else if (startMousePos.x - theEXrating.x >= 0 && startMousePos.x - theEXrating.x <= theEXrating.width &&
+						startMousePos.y - theEXrating.y >= 0 && startMousePos.y - theEXrating.y <= theEXrating.height)
+				{
+					theEXratingDrag = false;
+					startComboOffset.x = ClientPrefs.data.comboOffset[4];
+					startComboOffset.y = ClientPrefs.data.comboOffset[5];
+				}
+				
 			}
 			if(FlxG.mouse.justReleased || gamepadReleased) {
 				holdingObjectType = null;
+				theEXratingDrag = null;
 				//trace('dead');
 			}
 
@@ -346,6 +455,19 @@ class NoteOffsetState extends MusicBeatState
 				}
 			}
 
+			if(theEXratingDrag != null)
+				{
+					if(FlxG.mouse.justMoved)
+					{
+						var mmousePos:FlxPoint = FlxG.mouse.getScreenPosition(camHUD);
+						var addNumm:Int = theEXratingDrag ? 0 : 0;
+	
+						ClientPrefs.data.comboOffset[addNumm + 4] = Math.round((mmousePos.x - startMousePos.x) + startComboOffset.x);
+						ClientPrefs.data.comboOffset[addNumm + 5] = -Math.round((mmousePos.y - startMousePos.y) - startComboOffset.y);
+						repositionCombo();
+					}
+				}
+
 			if(controls.RESET || touchPad.buttonC.justPressed)
 			{
 				for (i in 0...ClientPrefs.data.comboOffset.length)
@@ -359,13 +481,11 @@ class NoteOffsetState extends MusicBeatState
 		{
 			if(controls.UI_LEFT_P)
 			{
-				holdTime = 0;
 				barPercent = Math.max(delayMin, Math.min(ClientPrefs.data.noteOffset - 1, delayMax));
 				updateNoteDelay();
 			}
 			else if(controls.UI_RIGHT_P)
 			{
-				holdTime = 0;
 				barPercent = Math.max(delayMin, Math.min(ClientPrefs.data.noteOffset + 1, delayMax));
 				updateNoteDelay();
 			}
@@ -376,6 +496,8 @@ class NoteOffsetState extends MusicBeatState
 				holdTime += elapsed;
 				if(controls.UI_LEFT) mult = -1;
 			}
+
+			if(controls.UI_LEFT_R || controls.UI_RIGHT_R) holdTime = 0;
 
 			if(holdTime > 0.5)
 			{
@@ -440,10 +562,10 @@ class NoteOffsetState extends MusicBeatState
 		
 		if(curBeat % 4 == 2)
 		{
-			FlxG.camera.zoom = 1.15;
+			FlxG.camera.zoom = 1.1;
 
 			if(zoomTween != null) zoomTween.cancel();
-			zoomTween = FlxTween.tween(FlxG.camera, {zoom: 1}, 1, {ease: FlxEase.circOut, onComplete: function(twn:FlxTween)
+			zoomTween = FlxTween.tween(FlxG.camera, {zoom: 1}, 0.8, {ease: FlxEase.circOut, onComplete: function(twn:FlxTween)
 				{
 					zoomTween = null;
 				}
@@ -458,6 +580,33 @@ class NoteOffsetState extends MusicBeatState
 					beatTween = null;
 				}
 			});
+//更多的东西
+			if(ClientPrefs.data.ratbounce == true) {
+			rating.angle = (Math.random() * 10 + 7) * (Math.random() > .5 ? 1 : -1);
+			FlxTween.tween(rating, {angle: 0}, .8, {ease: FlxEase.backOut});
+			}
+
+			if(ClientPrefs.data.exratbounce == true) {
+				theEXrating.angle = (Math.random() * 10 + 7) * (Math.random() > .5 ? 1 : -1);
+				FlxTween.tween(theEXrating, {angle: 0}, .8, {ease: FlxEase.backOut});
+				}
+	
+
+			theEXrating.scale.set(0.85, 0.85);
+			FlxTween.tween(theEXrating.scale, {x: 0.7, y: 0.7}, 0.5, {
+				ease: FlxEase.circOut,
+			});
+
+			iconP1.scale.set(1.2, 1.2);
+			iconP2.scale.set(1.2, 1.2);
+			FlxTween.tween(iconP1.scale, {x: 1, y: 1}, 0.4, {
+				ease: FlxEase.circOut,
+			});
+			FlxTween.tween(iconP2.scale, {x: 1, y: 1}, 0.4, {
+				ease: FlxEase.circOut,
+			});
+
+		
 		}
 
 		lastBeatHit = curBeat;
@@ -466,18 +615,24 @@ class NoteOffsetState extends MusicBeatState
 	function repositionCombo()
 	{
 		rating.screenCenter();
-		rating.x = coolText.x - 40 + ClientPrefs.data.comboOffset[0];
-		rating.y -= 60 + ClientPrefs.data.comboOffset[1];
+		rating.x = coolText.x - 40 + ClientPrefs.data.comboOffset[0] - 130;
+		rating.y -= 60 + ClientPrefs.data.comboOffset[1] - 100;
 
 		comboNums.screenCenter();
 		comboNums.x = coolText.x - 90 + ClientPrefs.data.comboOffset[2];
-		comboNums.y += 80 - ClientPrefs.data.comboOffset[3];
+		comboNums.y += 80 - ClientPrefs.data.comboOffset[3] + 80;
+
+		theEXrating.screenCenter();
+		theEXrating.x = coolText.x - 40 + ClientPrefs.data.comboOffset[4] + 130;
+		theEXrating.y += 0 - 60 - ClientPrefs.data.comboOffset[5] + 160;
+
 		reloadTexts();
+
 	}
 
 	function createTexts()
 	{
-		for (i in 0...4)
+		for (i in 0...6)
 		{
 			var text:FlxText = new FlxText(10, 48 + (i * 30), 0, '', 24);
 			text.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -503,6 +658,8 @@ class NoteOffsetState extends MusicBeatState
 				case 1: dumbTexts.members[i].text = '[' + ClientPrefs.data.comboOffset[0] + ', ' + ClientPrefs.data.comboOffset[1] + ']';
 				case 2: dumbTexts.members[i].text = Language.getPhrase('combo_numbers_offset', 'Numbers Offset:');
 				case 3: dumbTexts.members[i].text = '[' + ClientPrefs.data.comboOffset[2] + ', ' + ClientPrefs.data.comboOffset[3] + ']';
+				case 4: dumbTexts.members[i].text = Language.getPhrase('combo_exrating_offset', '\nExtra Rating Offset:');
+				case 5: dumbTexts.members[i].text = '\n[' + ClientPrefs.data.comboOffset[4] + ', ' + ClientPrefs.data.comboOffset[5] + ']';
 			}
 		}
 	}
@@ -518,7 +675,12 @@ class NoteOffsetState extends MusicBeatState
 		rating.visible = onComboMenu;
 		comboNums.visible = onComboMenu;
 		dumbTexts.visible = onComboMenu;
-		
+		theEXrating.visible = onComboMenu;
+		iconP1.visible = onComboMenu;
+		iconP2.visible = onComboMenu;
+		scoreTxt.visible = onComboMenu;
+		healthBar.visible = onComboMenu;
+
 		timeBar.visible = !onComboMenu;
 		timeTxt.visible = !onComboMenu;
 		beatText.visible = !onComboMenu;
@@ -535,7 +697,6 @@ class NoteOffsetState extends MusicBeatState
 
 		var str:String;
 		var str2:String;
-		final accept:String = (controls.mobileC) ? "A" : (!controls.controllerMode) ? "ACCEPT" : "Start";
 		if(onComboMenu)
 		{
 			str = Language.getPhrase('combo_offset', 'Combo Offset');
@@ -543,11 +704,16 @@ class NoteOffsetState extends MusicBeatState
 			addTouchPadCamera();
 		} else {
 			str = Language.getPhrase('note_delay', 'Note/Beat Delay');
-			addTouchPad('LEFT_RIGHT', 'A_B_C');
+			addTouchPad('LEFT_FULL', 'A_B_C');
 			addTouchPadCamera();
 		}
 
-		str2 = Language.getPhrase('switch_on_button', '(Press {1} to Switch)', [accept]);
+		if(controls.mobileC)
+			str2 = '(Press A to Switch)';
+		else if(!controls.controllerMode)
+			str2 = Language.getPhrase('switch_on_accept', '(Press Accept to Switch)');
+		else
+			str2 = Language.getPhrase('switch_on_start', '(Press Start to Switch)');
 
 		changeModeText.text = '< ${str.toUpperCase()} ${str2.toUpperCase()} >';
 	}

@@ -525,13 +525,13 @@ class LoadingState extends MusicBeatState
 		loadMax = imagesToPrepare.length + soundsToPrepare.length + musicToPrepare.length + songsToPrepare.length;
 		loaded = 0;
 
-		//then start threads
-		for (sound in soundsToPrepare) initThread(() -> preloadSound('sounds/$sound'), 'sound $sound');
-		for (music in musicToPrepare) initThread(() -> preloadSound('music/$music'), 'music $music');
-		for (song in songsToPrepare) initThread(() -> preloadSound(song, 'songs', true, false), 'song $song');
+		 // 使用 haxe.Timer 异步加载资源
+		for (sound in soundsToPrepare) haxe.Timer.delay(() -> initThread(() -> preloadSound('sounds/$sound'), 'sound $sound'), 0);
+		for (music in musicToPrepare) haxe.Timer.delay(() -> initThread(() -> preloadSound('music/$music'), 'music $music'), 0);
+		for (song in songsToPrepare) haxe.Timer.delay(() -> initThread(() -> preloadSound(song, 'songs', true, false), 'song $song'), 0);
 
 		// for images, they get to have their own thread
-		for (image in imagesToPrepare) initThread(() -> preloadGraphic(image), 'image $image');
+		for (image in imagesToPrepare) haxe.Timer.delay(() -> initThread(() -> preloadGraphic(image), 'image $image'), 0);
 	}
 
 	static function initThread(func:Void->Dynamic, traceData:String)
