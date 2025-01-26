@@ -128,6 +128,15 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 		addOption(option);
 		option.onChange = onChangeFPSCounter;
 
+		var option:Option = new Option('FPS Counter Size',
+			'Change the size of the FPS Counter.',
+			'fpsCounterSize',
+			INT);
+		addOption(option);
+		//option.onChange = onChangeFPSCounter;
+
+
+
 		#if sys
 		var option:Option = new Option('VSync',
 			'If checked, Enables VSync fixing any screen tearing at the cost of capping the FPS to screen refresh rate.\n(Must restart the game to have an effect)',

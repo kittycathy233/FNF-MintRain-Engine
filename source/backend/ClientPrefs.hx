@@ -92,6 +92,11 @@ import states.TitleState;
 	public var discordRPC:Bool = true;
 	public var loadingScreen:Bool = true;
 	public var language:String = 'en-US';
+
+	//额外的特性
+	public var rmperfect:Bool = false;
+	public var fpsCounterSize:Int = 16;
+
 }
 
 class ClientPrefs {
