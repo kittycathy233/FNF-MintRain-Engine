@@ -1,6 +1,9 @@
-# Friday Night Funkin' - Psych Engine Mobile
+to be updated
+# Friday Night Funkin' - MintRain Engine
 
-Engine originally used on [Mind Games Mod](https://gamebanana.com/mods/301107), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.
+Engine based on Psych Engine v1.0.1
+Shoutout to the [Funk Archive](https://gamebanana.com/mods/496238)!
+Psych Engine originally used on [Mind Games Mod](https://gamebanana.com/mods/301107), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.
 
 ## Customization:
 
@@ -11,6 +14,12 @@ inside `Project.xml`, you will find several variables to customize Psych Engine 
 to start you off, disabling Videos should be simple, simply Delete the line `"VIDEOS_ALLOWED"` or comment it out by wrapping the line in XML-like comments, like this `<!-- YOUR_LINE_HERE -->`
 
 same goes for *Lua Scripts*, comment out or delete the line with `LUA_ALLOWED`, this and other customization options are all available within the `Project.xml` file
+
+## MintRain Credits
+* KittyCathy - Programmer.
+
+### MintRain Special Credits
+to be updated
 
 ## Mobile Credits:
 * Lily - Head Porter and linc_luajit-rewriten.
