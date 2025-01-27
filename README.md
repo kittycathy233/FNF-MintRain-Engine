@@ -2,7 +2,9 @@ to be updated
 # Friday Night Funkin' - MintRain Engine
 
 Engine based on Psych Engine v1.0.1
+
 Shoutout to the [Funk Archive](https://gamebanana.com/mods/496238)!
+
 Psych Engine originally used on [Mind Games Mod](https://gamebanana.com/mods/301107), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.
 
 ## Customization:
@@ -19,6 +21,7 @@ same goes for *Lua Scripts*, comment out or delete the line with `LUA_ALLOWED`, 
 * KittyCathy - Programmer.
 
 ### MintRain Special Credits
+
 to be updated
 
 ## Mobile Credits:
