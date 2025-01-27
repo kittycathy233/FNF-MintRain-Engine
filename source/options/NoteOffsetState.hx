@@ -129,9 +129,9 @@ var songPercent:Float = 0;
 		theEXrating.updateHitbox();
 		theEXrating.antialiasing = ClientPrefs.data.antialiasing;
 
-		//if(ClientPrefs.exratingDisplay){
+		if(ClientPrefs.data.exratingDisplay){
 			add(theEXrating);
-		//}
+		}
 
 
 		healthBar = new Bar(0, FlxG.height * (!ClientPrefs.data.downScroll ? 0.89 : 0.11), 'healthBar', function() return health, 0, 2);
@@ -582,18 +582,18 @@ var songPercent:Float = 0;
 			});
 		//更多的东西
 			if(ClientPrefs.data.ratbounce == true) {
-			rating.angle = (Math.random() * 10 + 7) * (Math.random() > .5 ? 1 : -1);
-			FlxTween.tween(rating, {angle: 0}, .8, {ease: FlxEase.backOut});
+				rating.scale.set(0.8, 0.8);
+				FlxTween.tween(rating.scale, {x: 0.7, y: 0.7}, 0.4, {ease: FlxEase.circOut,});
 			}
 
 			if(ClientPrefs.data.exratbounce == true) {
 				theEXrating.scale.set(0.85, 0.85);
-				theEXrating.angle = (Math.random() * 10 + 7) * (Math.random() > .5 ? 1 : -1);
-				FlxTween.tween(theEXrating, {angle: 0}, .8, {ease: FlxEase.backOut});
-				FlxTween.tween(theEXrating.scale, {x: 0.7, y: 0.7}, 0.5, {ease: FlxEase.circOut,});
+				theEXrating.angle = (Math.random() * 10 + 4) * (Math.random() > .5 ? 1 : -1);
+				FlxTween.tween(theEXrating, {angle: 0}, .6, {ease: FlxEase.quartOut});
+				FlxTween.tween(theEXrating.scale, {x: 0.7, y: 0.7}, 0.5, {ease: FlxEase.circOut});
 			}
 
-			iconP1.scale.set(1.2, 1.2);
+			/*iconP1.scale.set(1.2, 1.2);
 			iconP2.scale.set(1.2, 1.2);
 			FlxTween.tween(iconP1.scale, {x: 1, y: 1}, 0.4, {
 				ease: FlxEase.circOut,
@@ -601,7 +601,7 @@ var songPercent:Float = 0;
 			FlxTween.tween(iconP2.scale, {x: 1, y: 1}, 0.4, {
 				ease: FlxEase.circOut,
 			});
-
+*/
 		
 		}
 

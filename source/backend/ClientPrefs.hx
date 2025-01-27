@@ -23,7 +23,7 @@ import states.TitleState;
 	public var vsync:Bool = false;
 	public var gameOverVibration:Bool = false;
 	
-	public var downScroll:Bool = false;
+	public var downScroll:Bool = true;
 	public var middleScroll:Bool = false;
 	public var opponentStrums:Bool = true;
 	public var showFPS:Bool = true;
@@ -57,7 +57,7 @@ import states.TitleState;
 	public var noReset:Bool = false;
 	public var healthBarAlpha:Float = 1;
 	public var hitsoundVolume:Float = 0;
-	public var pauseMusic:String = 'Tea Time';
+	public var pauseMusic:String = 'Romantic Smile';
 	public var checkForUpdates:Bool = true;
 	public var comboStacking:Bool = true;
 	public var gameplaySettings:Map<String, Dynamic> = [
@@ -101,7 +101,6 @@ import states.TitleState;
 	public var exratingDisplay:Bool = true;
 	public var rmperfect:Bool = false;	
 	public var ratbounce:Bool = true;
-	//public var osIconBop:Bool = false;
 	public var scoretxtstyle:String = 'MintRain';
 	public var rmmsTimeTxt:Bool = false;
 	public var scoretxtbounce:Bool = false;

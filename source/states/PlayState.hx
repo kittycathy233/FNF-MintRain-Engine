@@ -587,7 +587,7 @@ class PlayState extends MusicBeatState
 		/*mstimeTxt.y = comboSpr.y + 20;
 		mstimeTxt.x += comboSpr.x + 100;*/
 		msTimeTxt.x = ClientPrefs.data.comboOffset[2] + 345;
-		msTimeTxt.y = ClientPrefs.data.comboOffset[3] + 480 ;
+		msTimeTxt.y = -ClientPrefs.data.comboOffset[3] + 480 ;
 		uiGroup.add(msTimeTxt);
 
 		iconP1 = new HealthIcon(boyfriend.healthIcon, true);
@@ -1268,11 +1268,14 @@ class PlayState extends MusicBeatState
 		if(!ClientPrefs.data.scoreZoom)
 			return;
 
-		if(scoreTxtTween != null)
-			scoreTxtTween.cancel();
+		if(scoreTxtTween != null)	scoreTxtTween.cancel();
+		if(scoreTxtTweenAngle != null)	scoreTxtTweenAngle.cancel();
 
 		scoreTxt.scale.x = 1.075;
 		scoreTxt.scale.y = 1.075;
+		scoreTxt.angle = (Math.random() * 5) * (Math.random() > .5 ? 1 : -1);
+
+		scoreTxtTweenAngle = FlxTween.tween(scoreTxt, {angle: 0}, .4, {ease: FlxEase.quartOut});
 		scoreTxtTween = FlxTween.tween(scoreTxt.scale, {x: 1, y: 1}, 0.2, {
 			onComplete: function(twn:FlxTween) {
 				scoreTxtTween = null;
@@ -2767,7 +2770,7 @@ class PlayState extends MusicBeatState
 				}
 
 				comboGroup.add(rating);
-				comboGroup.add(theEXrating);
+				if (ClientPrefs.data.exratingDisplay) comboGroup.add(theEXrating);
 		
 			if (!PlayState.isPixelStage)
 			{
@@ -2784,7 +2787,7 @@ class PlayState extends MusicBeatState
 
 			if(ClientPrefs.data.ratbounce == true) 
 			{
-				rating.scale.set(0.9, 0.8);
+				rating.scale.set(0.9, 0.72);
 				FlxTween.tween(rating.scale, {x: 0.7, y: 0.7}, 0.4, {ease: FlxEase.circOut,});
 			}		
 			if(ClientPrefs.data.exratbounce == true) 
@@ -3412,9 +3415,36 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 			notes.sort(FlxSort.byY, ClientPrefs.data.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
 
-		iconP1.scale.set(1.2, 1.2);
-		iconP2.scale.set(1.2, 1.2);
+		if (ClientPrefs.data.iconbopstyle != "NONE") 
+			{
 
+			iconP1.scale.set(1.2, 1.2);
+			iconP2.scale.set(1.2, 1.2);
+			}
+			else if (ClientPrefs.data.iconbopstyle == "Kade") {
+				iconP1.scale.set(1.4, 1.4);
+				iconP2.scale.set(1.4, 1.4);
+			}
+
+			dancingLeft = !dancingLeft;
+	
+			if (ClientPrefs.data.iconbopstyle == "OS") {
+				if (dancingLeft){
+					iconP1.angle = 8; iconP2.angle = 8; // maybe i should do it with tweens, but i'm lazy // i'll make it in -1.0.0, i promise
+				} else { 
+					iconP1.angle = -8; iconP2.angle = -8;
+				}
+			}
+			else if (ClientPrefs.data.iconbopstyle == "MintRain") {
+				if (curBeat%4 == 0) {
+					iconP1.angle = -25;
+					iconP2.angle = 25;
+	
+					FlxTween.tween(iconP1, {angle: 0}, 0.3, {ease: FlxEase.circOut});
+					FlxTween.tween(iconP2, {angle: 0}, 0.3, {ease: FlxEase.circOut});
+				}
+				}
+	
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 

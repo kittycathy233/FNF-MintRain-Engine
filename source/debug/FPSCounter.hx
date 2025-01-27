@@ -3,7 +3,7 @@ package debug;
 import flixel.FlxG;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
-import openfl.text.Font;
+//import openfl.text.Font;
 import openfl.system.System as OpenFlSystem;
 import lime.system.System as LimeSystem;
 
@@ -44,7 +44,7 @@ class FPSCounter extends TextField
         super();
 
         // Load the custom font
-        var font:Font = new Font('assets/fonts/cnfont.ttf'); // 确保路径正确
+        //var font:Font = new Font('assets/fonts/cnfont.ttf'); // 确保路径正确
 
         #if !officialBuild
         if (LimeSystem.platformName == LimeSystem.platformVersion || LimeSystem.platformVersion == null)
@@ -60,7 +60,8 @@ class FPSCounter extends TextField
         mouseEnabled = false;
 
         // Set the font and text format
-        defaultTextFormat = new TextFormat(font.fontName, (ClientPrefs.data.fpsCounterSize), color); // 使用自定义字体
+        // defaultTextFormat = new TextFormat(font.fontName, (ClientPrefs.data.fpsCounterSize), color); // 使用自定义字体
+        defaultTextFormat = new TextFormat("_sans", (ClientPrefs.data.fpsCounterSize), color);
         width = FlxG.width;
         multiline = true;
         text = "Loading...";

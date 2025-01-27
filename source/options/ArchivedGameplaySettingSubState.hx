@@ -4,7 +4,7 @@ class ArchivedGameplaySettingSubState extends BlueBaseOptionsMenu
 {
 	public function new()
 	{
-		title = 'Archive Options\nWTF, silly Chinese Option (bushi)\n\nNot Done';
+		title = 'Extra Options\nWTF, silly Chinese Option\n\nNot Done';
 		rpcTitle = 'Extra Gameplay Settings Menu'; //for Discord Rich Presence
 
 		//I'd suggest using "Downscroll" as an example for making your own option since it is the simplest here
@@ -33,7 +33,7 @@ class ArchivedGameplaySettingSubState extends BlueBaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Extra-Rating Bounce',
-		"加强扩展评分图标的跳动效果\n当然，这个选项也存在bug，也推荐禁用",
+		"加强扩展评分图标的跳动效果\n当然同上，这个选项也存在一些bug",
 		'exratbounce',
 		BOOL);
 		addOption(option);
@@ -45,7 +45,7 @@ class ArchivedGameplaySettingSubState extends BlueBaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Ratings Opacity',
-			'How much transparent should the Rating be.',
+			'修改评级贴图的不透明度，100%为不修改.',
 			'ratingsAlpha',
 			PERCENT);
 		option.scrollSpeed = 1.6;
@@ -64,7 +64,7 @@ class ArchivedGameplaySettingSubState extends BlueBaseOptionsMenu
 
 
 		var option:Option = new Option('IconBop Style',
-		"（施工中）\n设置小图标的跳动样式",
+		"设置小图标的跳动样式",
 		'iconbopstyle',
 		STRING,
 		['Psych', 'OS', 'MintRain', 'Kade', 'NONE']);
@@ -78,7 +78,7 @@ class ArchivedGameplaySettingSubState extends BlueBaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Remove the "ms" offset',
-		'（待修改）\n移除Note命中时“xx ms”的显示\n可能会用到的功能',
+		'移除Note命中时“xx ms”的显示\n可能会用到的功能',
 		'rmmsTimeTxt',
 		BOOL);
 		addOption(option);
