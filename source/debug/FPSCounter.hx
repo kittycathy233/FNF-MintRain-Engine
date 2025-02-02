@@ -6,6 +6,8 @@ import openfl.text.TextFormat;
 //import openfl.text.Font;
 import openfl.system.System as OpenFlSystem;
 import lime.system.System as LimeSystem;
+import lime.app.Application;
+import states.MainMenuState;
 
 /**
     The FPS class provides an easy-to-use monitor to display
@@ -98,7 +100,7 @@ class FPSCounter extends TextField
         'FPS: $currentFPS' + 
         '\nMemory: ${flixel.util.FlxStringUtil.formatBytes(memoryMegas)}'+' / ${flixel.util.FlxStringUtil.formatBytes(memoryPeak)}' + 
 		os ;
-        if(ClientPrefs.data.exgameversion) text += "\nMintRain Engine 1.0.14\nPsych Engine v1.0.1";
+        if(ClientPrefs.data.exgameversion) text += '\nMintRain Engine v${Application.current.meta.get('version')} \nPsych Engine v${MainMenuState.psychEngineVersion.trim()}';
 
         textColor = 0xFFFFFFFF;
         if (currentFPS < FlxG.drawFramerate * 0.5)
